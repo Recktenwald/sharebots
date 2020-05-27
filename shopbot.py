@@ -68,12 +68,17 @@ def parse(update, context):
             update.message.reply_text(f'"{item}" not found.')
 
     elif 'remove' in text or 'rm' in text:
-        item = text.split(' ')[1].strip()
-        if item in shopping_list:
-            shopping_list.remove(item)
-            update.message.reply_text(f'Removed "{item}"')
+        text_list = text.split(' ')
+        if len(text_list) > 1:
+            item = text_list[1].strip()
+            if item in shopping_list:
+                shopping_list.remove(item)
+                update.message.reply_text(f'Removed "{item}"')
+            else:
+                update.message.reply_text(f'"{item}" not found.')
+
         else:
-            update.message.reply_text(f'"{item}" not found.')
+            update.message.reply_text(f'"{text}" invalid command, specify an item.')
 
     elif 'clear' in text:
         shopping_list.clear()
