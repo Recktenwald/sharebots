@@ -8,6 +8,7 @@ Telegram bot for keeping a shopping list.
 
 import logging
 import json 
+import os
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -91,6 +92,9 @@ def error(update, context):
 
 
 def read_secrets(path=None):
+    __location__ = os.path.realpath(
+        os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    absolute_path = os.path.join(__location__, path)
 
     with open(path, 'r') as infile:
         json_dict = json.load(infile)
