@@ -41,16 +41,21 @@ class wg():
         print(string)
 
 
-def put(update, context):
+def signup(update, context):
     """Usage: /put value"""
     # Generate ID and seperate value from command
     key = str(uuid4())
     value = update.message.text.partition(' ')[2]
 
     # Store value
-    context.user_data[key] = value
-
-    update.message.reply_text(key)
+    context.bot_data[key] = value
+    
+    try:
+        username = update.message.chat.username
+        update.message.reply_text(username)
+    except:
+        error_text = f'No username in object: \n{str(update)}'
+        update.message.reply_text(error_text)
 
 
 def get(update, context):
@@ -60,7 +65,7 @@ def get(update, context):
 
     # Load value
     try:
-        value = context.user_data[key]
+        value = context.bot_data[key]
         update.message.reply_text(value)
 
     except KeyError:
@@ -131,7 +136,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("lullaby", lullaby))
-    dp.add_handler(CommandHandler('put', put))
+    dp.add_handler(CommandHandler('signup', signup))
     dp.add_handler(CommandHandler('get', get))
     dp.add_handler(MessageHandler(Filters.text, parse))
     dp.add_error_handler(error)
