@@ -1,6 +1,6 @@
 # Sharebots
 
-Telegram bots for easy coordination in shared appartments.
+Bots for easy coordination via Telegram in shared apartments.
 
 ## shopbot
 Shopbot keeps a shared shopping list. Everyone can add and remove items, and show the current shopping list.
