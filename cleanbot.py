@@ -42,7 +42,7 @@ class wg():
 
 
 def signup(update, context):
-    """Usage: /put value"""
+    """Usage: /signup"""
     # Generate ID and seperate value from command
     key = str(uuid4())
     value = update.message.text.partition(' ')[2]
@@ -52,10 +52,41 @@ def signup(update, context):
     
     try:
         username = update.message.chat.username
-        update.message.reply_text(username)
+        update.message.reply_text(username, 'not implemented')
     except:
         error_text = f'No username in object: \n{str(update)}'
         update.message.reply_text(error_text)
+
+
+def done(update, context):
+    """Usage: /done
+    Marks user's chore as done for this week."""
+
+    # Store value
+    # TODO: Write a new state with timstamp to the
+    # History of chores. Make sure this history exists beforehand.
+    #context.bot_data[timeseries][today] = True
+    #context.user_data[username][timeseries][today] = chore
+    
+    try:
+        username = update.message.chat.username
+        update.message.reply_text(username, 'not implemented')
+    except:
+        error_text = f'No username in object: \n{str(update)}'
+        update.message.reply_text(error_text)
+
+
+def undone(update, context):
+    """Usage: /undone
+    Mark current user's chore as not done."""
+    pass
+
+
+def nag(update, context):
+    """Usage: /nag <chore>
+    Claim that a <chore> is not done well. 
+    Chore owner will get increasingly pressing reminders to do their chore.."""
+    pass
 
 
 def get(update, context):
@@ -73,7 +104,8 @@ def get(update, context):
 
 
 def show(update, context):
-    """Send a message when the command /start is issued."""
+    """Usage: /show
+    Show current chore schedule and satisfaction."""
     update.message.reply_text('')
 
 
