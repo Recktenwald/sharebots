@@ -91,14 +91,14 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def read_secrets(path=None):
+def read_secrets(path=None, token_name='shopbot_token'):
     __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
     absolute_path = os.path.join(__location__, path)
 
     with open(path, 'r') as infile:
         json_dict = json.load(infile)
-    api_token = json_dict['token']
+    api_token = json_dict[token_name]
     return api_token
 
 def main():
