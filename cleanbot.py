@@ -3,7 +3,7 @@
 # This program is dedicated to the public domain under the CC0 license.
 
 """
-Telegram bot for keeping a shopping list.
+Telegram bot for coordinating household chores. Under construction.
 """
 
 import logging
