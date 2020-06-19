@@ -7,3 +7,9 @@ Shopbot keeps a shared shopping list. Everyone can add and remove items, and sho
 
 ## cleanbot
 A passive-aggressive bot that reminds you of your current cleaning tasks.
+
+## cookiebot
+A chatbot sprouting random wisdom.
+
+## habitbot
+Plan habits & todos, get reminders and stats
