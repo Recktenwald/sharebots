@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This program is dedicated to the public domain under the CC0 license.
 
@@ -19,12 +19,29 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-#shopping_list = ['start_item', 'next_item']
-shopping_list = [] 
+class ShoppingDB:
+    """Wrapper for abstracting shopping list textfile i/o"""
+
+    def __init__(self, name="shopping_list.csv"):
+        """Find or create a textfile to store the shopping list in"""
+        if not os.path.isfile(name):
+            with open(name, "w") as shopping_list_file:
+                shopping_list_file.write('test')
+
+        self.shopping_list_file = name
+    
+    def read(self, tag=None):
+        """Read from storage, filter for tag. 
+        Returns list of shopping items."""
+        with open(self.shopping_list_file, "r") as f:
+            return f.read().splitlines()
+
+    def write(self, string):
+        """Write string to storage"""
+        with open(self.shopping_list_file, "w") as f:
+            f.write(string)
 
 
-# Define a few command handlers. These usually take the two arguments update and
-# context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi Bubus!')
@@ -37,53 +54,59 @@ def help(update, context):
 
 def parse(update, context):
     """Parse text for commands."""
-    global shopping_list
+    shopping_db = ShoppingDB()
+    shopping_list = shopping_db.read()
 
     text = update.message.text.lower()
+    lines = text.splitlines()
     if text is None:
-        update.message.reply_text('Error. Unknown Error.')
+        update.message.reply_text('Error. Empty text.')
 
-    elif 'list' in text or text == 'ls':
+    elif 'list' in lines[0] or 'ls' in lines[0][0:3]:
+        commands = lines[0].split(' ')
+        filter_tag = None
+        if len(commands) > 1:
+            filter_tag = commands[1]
         if len(shopping_list) == 0:
             update.message.reply_text('Shopping list is empty.')
         else:
-            reply = '\n'.join(shopping_list)
+            reply = ''
+            if filter_tag:
+                for item in shopping_list:
+                    if filter_tag in item:
+                        reply += str(item) + '\n'
+            else:
+                i = 0
+                for item in shopping_list:
+                    reply += str(i) + '. ' + str(item) + '\n'
+                    i += 1
             update.message.reply_text(reply)
 
-    elif '+' in text:
-        item = text.split('+')[1].strip()
-        shopping_list += [item]
-        update.message.reply_text(f'Added "{item}"')
-
-    elif 'add' in text:
-        item = text.split('add')[1].strip()
-        shopping_list += [item]
-        update.message.reply_text(f'Added "{item}"')
-
-    elif '-' in text:
-        item = text.split('-')[1].strip()
-        if item in shopping_list:
-            shopping_list.remove(item)
-            update.message.reply_text(f'Removed "{item}"')
-        else:
-            update.message.reply_text(f'"{item}" not found.')
-
-    elif 'remove' in text or 'rm' in text:
-        text_list = text.split(' ')
-        if len(text_list) > 1:
-            item = text_list[1].strip()
-            if item in shopping_list:
-                shopping_list.remove(item)
-                update.message.reply_text(f'Removed "{item}"')
-            else:
-                update.message.reply_text(f'"{item}" not found.')
-
-        else:
-            update.message.reply_text(f'"{text}" invalid command, specify an item.')
-
-    elif 'clear' in text:
+    elif 'clear' in lines[0]:
         shopping_list.clear()
         update.message.reply_text(f'List cleared.')
+
+    elif 'rm' in lines[0] or 'remove' in lines[0]:
+        # Extract all numbers from all lines
+        removal_indices = []
+        for line in lines:
+            removal_indices += [int(word) for word in line.split() if word.isdigit()]
+        # Check if indices occur in shopping list
+        checked_indices = [num for num in removal_indices if num >= 0 and num < len(shopping_list)]
+        # Remove indicated items from list - start with largest to prevent re-indexing of list
+        reply = 'Removed:\n'
+        for index in sorted(checked_indices, reverse=True):
+            removed_item = shopping_list.pop(index)
+            reply += str(removed_item) + '\n'
+
+        update.message.reply_text(reply)
+
+    else:
+        shopping_list += lines
+        update.message.reply_text(f'Added {len(lines)} items.')
+
+
+    shopping_db.write('\n'.join(shopping_list))
 
 
 def error(update, context):
